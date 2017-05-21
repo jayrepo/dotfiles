@@ -1,14 +1,7 @@
-set nocompatible               " Be iMproved
 set shortmess=atI " Quick start
 lang mes en_US.UTF-8
-if has('win32') || has('win64')
-  " let $HOME=$VIM
-  set runtimepath^=~/.vim
-  set langmenu=en
-  let $LANG='en'
-endif
 set termguicolors
-call plug#begin('~/.vim/bundle')
+call plug#begin('~/.local/share/nvim/bundle')
 "Plug 'Valloric/YouCompleteMe'
 "Plug 'Shougo/vimproc.vim'
 "Plug 'Shougo/unite.vim'
@@ -46,7 +39,6 @@ set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,sjis,euc-kr,latin1
 set fileformats=unix,dos
 
 " ========== General Config ==========
-syntax on           " Syntax highlighting
 set mouse=a         " Enable mouse
 set hidden          " Allow buffer switching without saving
 set history=1000    " Enable Longer cmd history
@@ -60,8 +52,6 @@ set winminheight=0  " Windows can be 0 line high
 set laststatus=2    " Always show the statusline
 
 " ========== Search ================
-set incsearch       " Find as you type search
-set hlsearch        " Highlight search terms
 set ignorecase      " Case insensitive search
 set smartcase       " Case sensitive when uppercase present
 
@@ -70,21 +60,12 @@ set noswapfile
 set nobackup
 
 " =========== Persistent Undo =======
-if !isdirectory(expand('~/.vim/undo/'))
-  silent call mkdir(expand('~/.vim/undo'), 'p')
-endif
-
-if has("persistent_undo")
-  set undodir=~/.vim/undo/
-  set undofile
-  set undolevels=1000
-  set undoreload=10000
-endif
+set undofile
+set undolevels=1000
 
 " ============== Indentation ===========
 set autoindent
 set smartindent
-set smarttab
 set shiftwidth=2    " Use indents of 2 spaces
 set expandtab       " Tabs are spaces, not tabs
 set tabstop=2       " An indentation every 2 columns
@@ -96,7 +77,6 @@ set foldmethod=indent
 set foldlevel=999
 
 " ========= Completion ========
-set wildmenu        " Show list instead of just completing
 set wildignorecase
 set wildmode=list:longest,full
 set wildignore=*.pyc
@@ -111,26 +91,6 @@ set scrolloff=3                 " Minimum lines to keep above and below cursor
 set background=dark
 colorscheme gruvbox 
 set cursorline      " Highlight current line
-
-if has('gui_running')
-  if has('win32') || has('win64')
-    set guifont=Hack:h11
-    " set guifont=Envy_Code_R:h11
-    " set guifont=Consolas:h11
-    set rop=type:directx,gamma:1.0,contrast:0.5,level:1,geom:1,renmode:4,taamode:1
-    " set rop=type:directx,renmode:5,taamode:1
-  else
-    set guifont=Hack 11
-  endif
-  set guioptions-=b " disable horizontal scrollbar
-  set guioptions-=r " disable right scrollbar
-  set guioptions-=l " disable left scrollbar 
-  set guioptions-=m " disable menu
-  set guioptions-=T " disable toolbar
-else
-  set t_Co=256
-  set title       " Set terminal title
-endif
 set textwidth=80
 set colorcolumn=+1
 " ================ Shortcut ==============
@@ -172,10 +132,6 @@ nnoremap <space>s :Unite -quick-match buffer<cr>
 " python
 autocmd BufRead *.py nmap <F5> :!python "%"<CR>
 
-" Javascript
-autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
-
-
 " ==Systastic
 let g:syntastic_always_populate_loc_list=1
 let g:syntastic_auto_loc_list=1
@@ -193,8 +149,6 @@ if executable('rg')
 endif
 
 " YouCompleteMe
-let g:ycm_server_python_interpreter='python'
-let g:ycm_autoclose_preview_window_after_completion=1
 let g:lightline = {
   \ 'colorscheme': 'gruvbox',
   \ 'active': {

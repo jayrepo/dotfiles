@@ -175,6 +175,8 @@ bindkey -M menuselect 'j' vi-down-line-or-history # bottom
 alias vi="nvim"
 alias vim="nvim"
 alias pac="pacaur"
+alias chrome="google-chrome-stable"
+alias gs="git status"
 ## translate
 #alias u='translate -i'
 

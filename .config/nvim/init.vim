@@ -1,22 +1,18 @@
 set shortmess=atI " Quick start
+set title
 lang mes en_US.UTF-8
 set termguicolors
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 call plug#begin('~/.local/share/nvim/bundle')
-"Plug 'Valloric/YouCompleteMe'
-"Plug 'Shougo/vimproc.vim'
 "Plug 'Shougo/unite.vim'
+Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'jiangmiao/auto-pairs'
-" Plug 'Shougo/denite.nvim'
+Plug 'justinmk/vim-sneak'
+Plug 'justinmk/vim-dirvish'
 Plug 'morhetz/gruvbox'
-" Plug 'Shougo/neomru.vim'
-" Plug 'Shougo/neoyank.vim'
-" Plug 'Shougo/vimshell.vim'
 Plug 'mhinz/vim-startify'
-" Plug 'Shougo/vimfiler.vim'
 Plug 'mbbill/undotree'
-Plug 'itchyny/lightline.vim'
-" Plug 'othree/yajs.vim' " js syntax
-" Plug 'gavocanov/vim-js-indent' " js indent
+Plug 'vim-airline/vim-airline'
 Plug 'scrooloose/syntastic'
 Plug 'junegunn/rainbow_parentheses.vim'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -25,10 +21,11 @@ Plug 'tpope/vim-surround'
 " Plug 'tpope/vim-repeat'
 " Plug 'mbbill/fencview'
 Plug 'pangloss/vim-javascript'
-" Plug 'mxw/vim-jsx'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
+Plug 'tpope/vim-fugitive'
+Plug 'mhinz/vim-signify'
 call plug#end()
 
 " ============ Encodeing ============
@@ -89,7 +86,7 @@ set scrolloff=3                 " Minimum lines to keep above and below cursor
 
 " ================ UI =================
 set background=dark
-colorscheme gruvbox 
+colorscheme gruvbox
 set cursorline      " Highlight current line
 set textwidth=80
 set colorcolumn=+1
@@ -140,76 +137,43 @@ let g:syntastic_check_on_wq=0
 let g:syntastic_javascript_checkers=['standard']
 let g:syntastic_python_checkers=['prospector']
 
-if executable('rg')
-  let g:unite_source_grep_command='rg'
-	let g:unite_source_grep_default_opts='--color=never --no-heading -n -S'
-	let g:unite_source_grep_recursive_opt=''
-	let g:unite_source_rec_async_command =
-    \ ['rg', '--follow', '--hidden', '--files', '-g', '']
-endif
+" ==Denite
+" Change file_rec command.
+call denite#custom#var('file_rec', 'command',
+\ ['rg', '--files', '--glob', '!.git', ''])
+" For Pt(the platinum searcher)
+" NOTE: It also supports windows.
+" Change mappings.
+call denite#custom#map(
+      \ 'insert',
+      \ '<C-j>',
+      \ '<denite:move_to_next_line>',
+      \ 'noremap'
+      \)
+call denite#custom#map(
+      \ 'insert',
+      \ '<C-k>',
+      \ '<denite:move_to_previous_line>',
+      \ 'noremap'
+      \)
 
-" YouCompleteMe
-let g:lightline = {
-  \ 'colorscheme': 'gruvbox',
-  \ 'active': {
-  \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ]],
-  \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
-  \ },
-  \ 'component_function': {
-  \   'fugitive': 'LightLineFugitive',
-  \   'filename': 'LightLineFilename',
-  \   'fileformat': 'LightLineFileformat',
-  \   'filetype': 'LightLineFiletype',
-  \   'fileencoding': 'LightLineFileencoding',
-  \   'mode': 'LightLineMode',
-  \ },
-  \ 'component_expand': {
-  \   'syntastic': 'SyntasticStatuslineFlag',
-  \ },
-  \ 'component_type': {
-  \   'syntastic': 'error',
-  \ },
-  \ 'subseparator': { 'left': '|', 'right': '|' }
-  \ }
+" Ripgrep command on grep source
+call denite#custom#var('grep', 'command', ['rg'])
+call denite#custom#var('grep', 'default_opts',
+    \ ['--vimgrep', '--no-heading'])
+call denite#custom#var('grep', 'recursive_opts', [])
+call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+call denite#custom#var('grep', 'separator', ['--'])
+call denite#custom#var('grep', 'final_opts', [])
 
-function! LightLineModified()
-  return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'
-endfunction
+" Change ignore_globs
+call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
+      \ [ '.git/', '.ropeproject/', '__pycache__/',
+      \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/'])
 
-function! LightLineReadonly()
-  return &ft !~? 'help' && &readonly ? 'RO' : ''
-endfunction
-
-function! LightLineFilename()
-  let fname = expand('%:t')
-  return &ft == 'vimfiler' ? vimfiler#get_status_string() :
-        \ &ft == 'unite' ? unite#get_status_string() :
-        \ &ft == 'vimshell' ? vimshell#get_status_string() :
-        \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
-        \ ('' != fname ? fname : '[No Name]') .
-        \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
-endfunction
-
-function! LightLineFileformat()
-  return winwidth(0) > 70 ? &fileformat : ''
-endfunction
-
-function! LightLineFiletype()
-  return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
-endfunction
-
-function! LightLineFileencoding()
-  return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
-endfunction
-
-function! LightLineMode()
-  let fname = expand('%:t')
-  return &ft == 'unite' ? 'Unite' :
-        \ &ft == 'vimfiler' ? 'VimFiler' :
-        \ &ft == 'vimshell' ? 'VimShell' :
-        \ winwidth(0) > 60 ? lightline#mode() : ''
-endfunction
-
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+" let g:airline_symbols_ascii = 1
 " augroup AutoSyntastic
 "   autocmd!
 "   autocmd BufWritePost *.c,*.cpp call s:syntastic()
@@ -226,3 +190,20 @@ let g:vimshell_force_overwrite_statusline = 0
 " source $VIMRUNTIME/delmenu.vim
 "
 let g:deoplete#enable_at_startup = 1
+let g:startify_bookmarks = [{'p': '~/Projects'}]
+" Disable when using multiple cursors
+function g:Multiple_cursors_before()
+  let g:deoplete#disable_auto_complete = 1
+endfunction
+function g:Multiple_cursors_after()
+  let g:deoplete#disable_auto_complete = 0
+endfunction
+" Key mapping for deoplete
+inoremap <silent><expr> <TAB>
+\ pumvisible() ? "\<C-n>" :
+\ <SID>check_back_space() ? "\<TAB>" :
+\ deoplete#mappings#manual_complete()
+function! s:check_back_space() abort "{{{
+let col = col('.') - 1
+return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}

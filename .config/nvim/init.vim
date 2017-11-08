@@ -6,6 +6,7 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 call plug#begin('~/.local/share/nvim/bundle')
 "Plug 'Shougo/unite.vim'
 Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'chemzqm/denite-git'
 Plug 'jiangmiao/auto-pairs'
 Plug 'justinmk/vim-sneak'
 Plug 'justinmk/vim-dirvish'
@@ -21,9 +22,11 @@ Plug 'tpope/vim-surround'
 " Plug 'tpope/vim-repeat'
 " Plug 'mbbill/fencview'
 Plug 'pangloss/vim-javascript'
+Plug 'heavenshell/vim-jsdoc'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
+Plug 'zchee/deoplete-jedi'
 Plug 'tpope/vim-fugitive'
 Plug 'mhinz/vim-signify'
 call plug#end()
@@ -115,15 +118,15 @@ nmap <silent> <leader>s :set nolist!<CR>
 " ================ Key Mapping ===============
 imap jk <esc>
 nnoremap ,cd :cd %:p:h<CR>:pwd<CR>
-nmap <space> [unite]
-nnoremap [unite] <nop>
+nmap <space> [Denite]
+nnoremap [Denite] <nop>
 
-nnoremap <silent> [unite]<space> :<C-u>Unite
-  \ -buffer-name=files buffer file_mru bookmark file_rec/async<CR>
+nnoremap <silent> [Denite]<space> :<C-u>Denite
+  \ -buffer-name=files buffer<CR>
 
 let g:unite_source_history_yank_enable=1
-nnoremap <space>y :Unite history/yank<cr>
-nnoremap <space>s :Unite -quick-match buffer<cr>
+nnoremap <space>y :Denite history/yank<cr>
+nnoremap <space>s :Denite -quick-match buffer<cr>
 
 " =============== Speecific Language Settings ==========
 " python
@@ -139,32 +142,23 @@ let g:syntastic_python_checkers=['prospector']
 
 " ==Denite
 " Change file_rec command.
-call denite#custom#var('file_rec', 'command',
-\ ['rg', '--files', '--glob', '!.git', ''])
-" For Pt(the platinum searcher)
-" NOTE: It also supports windows.
+if executable('rg')
+  call denite#custom#var('file_rec', 'command',
+  \ ['rg', '--files', '--glob', '!.git', ''])
+  " Ripgrep command on grep source
+  call denite#custom#var('grep', 'command', ['rg'])
+  call denite#custom#var('grep', 'default_opts',
+      \ ['--vimgrep', '--no-heading'])
+  call denite#custom#var('grep', 'recursive_opts', [])
+  call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+  call denite#custom#var('grep', 'separator', ['--'])
+  call denite#custom#var('grep', 'final_opts', [])
+endif
 " Change mappings.
-call denite#custom#map(
-      \ 'insert',
-      \ '<C-j>',
-      \ '<denite:move_to_next_line>',
-      \ 'noremap'
-      \)
-call denite#custom#map(
-      \ 'insert',
-      \ '<C-k>',
-      \ '<denite:move_to_previous_line>',
-      \ 'noremap'
-      \)
-
-" Ripgrep command on grep source
-call denite#custom#var('grep', 'command', ['rg'])
-call denite#custom#var('grep', 'default_opts',
-    \ ['--vimgrep', '--no-heading'])
-call denite#custom#var('grep', 'recursive_opts', [])
-call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-call denite#custom#var('grep', 'separator', ['--'])
-call denite#custom#var('grep', 'final_opts', [])
+call denite#custom#map('insert', '<C-j>',
+      \ '<denite:move_to_next_line>', 'noremap')
+call denite#custom#map('insert', '<C-k>',
+      \ '<denite:move_to_previous_line>', 'noremap')
 
 " Change ignore_globs
 call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
@@ -174,28 +168,14 @@ call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 " let g:airline_symbols_ascii = 1
-" augroup AutoSyntastic
-"   autocmd!
-"   autocmd BufWritePost *.c,*.cpp call s:syntastic()
-" augroup END
-" function! s:syntastic()
-"   SyntasticCheck
-"   call lightline#update()
-" endfunction
 
-let g:unite_force_overwrite_statusline = 0
-let g:vimfiler_force_overwrite_statusline = 0
-let g:vimshell_force_overwrite_statusline = 0
-
-" source $VIMRUNTIME/delmenu.vim
-"
 let g:deoplete#enable_at_startup = 1
 let g:startify_bookmarks = [{'p': '~/Projects'}]
 " Disable when using multiple cursors
-function g:Multiple_cursors_before()
+function! g:Multiple_cursors_before()
   let g:deoplete#disable_auto_complete = 1
 endfunction
-function g:Multiple_cursors_after()
+function! g:Multiple_cursors_after()
   let g:deoplete#disable_auto_complete = 0
 endfunction
 " Key mapping for deoplete
@@ -207,3 +187,8 @@ function! s:check_back_space() abort "{{{
 let col = col('.') - 1
 return !col || getline('.')[col - 1]  =~ '\s'
 endfunction"}}}
+
+let g:python3_host_prog=$HOME.'/neoenv/bin/python'
+let g:python_host_prog=$HOME.'/neoenv2/bin/python'
+autocmd CompleteDone * silent! pclose!
+let g:jsdoc_allow_input_prompt = 1

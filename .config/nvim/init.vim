@@ -9,8 +9,6 @@ call plug#begin(stdpath('data') . '/plugged')
 Plug 'morhetz/gruvbox'
 Plug 'mhinz/vim-startify'
 Plug 'luochen1990/rainbow'
-" Yggdroot/LeaderF
-" shougo/denite
 Plug 'sheerun/vim-polyglot'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'tpope/vim-commentary'
@@ -127,8 +125,8 @@ let g:lightline = {
       \ },
       \ }
 
-  " Use auocmd to force lightline update.
-  autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+" Use auocmd to force lightline update.
+autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 
 " set guifont=FuraCode\ Nerd\ Font\ Retina:h12
@@ -256,38 +254,38 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
 
 let g:coc_explorer_global_presets = {
-\   'tab': {
-\     'position': 'tab',
-\     'quit-on-open': v:true,
-\   },
-\   'floating': {
-\     'position': 'floating',
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'floatingTop': {
-\     'position': 'floating',
-\     'floating-position': 'center-top',
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'floatingLeftside': {
-\     'position': 'floating',
-\     'floating-position': 'left-center',
-\     'floating-width': 50,
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'floatingRightside': {
-\     'position': 'floating',
-\     'floating-position': 'right-center',
-\     'floating-width': 50,
-\     'open-action-strategy': 'sourceWindow',
-\   },
-\   'simplify': {
-\     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
-\   },
-\   'buffer': {
-\     'sources': [{'name': 'buffer', 'expand': v:true}]
-\   },
-\ }
+      \ 'tab': {
+      \   'position': 'tab',
+      \   'quit-on-open': v:true,
+      \ },
+      \ 'floating': {
+      \   'position': 'floating',
+      \   'open-action-strategy': 'sourceWindow',
+      \ },
+      \ 'floatingTop': {
+      \   'position': 'floating',
+      \   'floating-position': 'center-top',
+      \   'open-action-strategy': 'sourceWindow',
+      \ },
+      \ 'floatingLeftside': {
+      \   'position': 'floating',
+      \   'floating-position': 'left-center',
+      \   'floating-width': 50,
+      \   'open-action-strategy': 'sourceWindow',
+      \ },
+      \ 'floatingRightside': {
+      \   'position': 'floating',
+      \   'floating-position': 'right-center',
+      \   'floating-width': 50,
+      \   'open-action-strategy': 'sourceWindow',
+      \ },
+      \ 'simplify': {
+      \   'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
+      \ },
+      \ 'buffer': {
+      \   'sources': [{'name': 'buffer', 'expand': v:true}]
+      \ },
+      \ }
 
 " Use preset argument to open it
 nmap <leader>ef :CocCommand explorer --preset floating<CR>

@@ -2,7 +2,7 @@
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # Alias
@@ -74,23 +74,23 @@ bindkey -M vicmd 'j' history-substring-search-down
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 command_not_found_handler() {
-	local pkgs cmd="$1" files=()
-	printf 'zsh: command not found: %s' "$cmd" # print command not found asap, then search for packages
-	files=(${(f)"$(pacman -F --machinereadable -- "/usr/bin/${cmd}")"})
-	if (( ${#files[@]} )); then
-		printf '\r%s may be found in the following packages:\n' "$cmd"
-		local res=() repo package version file
-		for file in "$files[@]"; do
-			res=("${(0)file}")
-			repo="$res[1]"
-			package="$res[2]"
-			version="$res[3]"
-			file="$res[4]"
-			printf '  %s/%s %s: /%s\n' "$repo" "$package" "$version" "$file"
-		done
-	else
-		printf '\n'
-	fi
-	return 127
+    local pkgs cmd="$1" files=()
+    printf 'zsh: command not found: %s' "$cmd" # print command not found asap, then search for packages
+    files=(${(f)"$(pacman -F --machinereadable -- "/usr/bin/${cmd}")"})
+    if (( ${#files[@]} )); then
+        printf '\r%s may be found in the following packages:\n' "$cmd"
+        local res=() repo package version file
+        for file in "$files[@]"; do
+            res=("${(0)file}")
+            repo="$res[1]"
+            package="$res[2]"
+            version="$res[3]"
+            file="$res[4]"
+            printf '  %s/%s %s: /%s\n' "$repo" "$package" "$version" "$file"
+        done
+    else
+        printf '\n'
+    fi
+    return 127
 }
 source /usr/share/nvm/init-nvm.sh
